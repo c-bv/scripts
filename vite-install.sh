@@ -186,9 +186,10 @@ tsconfig_content=$(
         "module": "ESNext",
         "skipLibCheck": true,
 
-        /* Bundler mode */
+         /* Bundler mode */
         "moduleResolution": "Node",
         "allowImportingTsExtensions": true,
+        "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
