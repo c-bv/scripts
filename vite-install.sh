@@ -14,6 +14,20 @@ BLUE_BOLD='\033[1;34m'
 
 NC='\033[0m'
 
+previous_outputs=()
+
+add_and_print() {
+    previous_outputs+=("$1")
+    print_previous_outputs
+}
+
+print_previous_outputs() {
+    clear
+    for output in "${previous_outputs[@]}"; do
+        echo -e "$output"
+    done
+}
+
 # ----------------------------------------------------------------------------------------------
 # Installation
 # ----------------------------------------------------------------------------------------------
@@ -23,16 +37,31 @@ echo -e "${GREEN}█ █▄░█ █▀ ▀█▀ ▄▀█ █░░
 echo -e "${GREEN}█ █░▀█ ▄█ ░█░ █▀█ █▄▄ █▄▄${NC}"
 echo ""
 echo "Creating a new React app with Vite and TypeScript"
+echo ""
+
+echo "Enter an installation directory: (the directory will be created if it does not exist)"
+read install_dir
+
+if [ ! -d "$install_dir" ]; then
+    echo "Directory does not exist. Creating directory..."
+    sudo mkdir -p $install_dir
+    add_and_print "Creating directory               ${GREEN_BOLD}Done!${NC}"
+fi
+
+cd $install_dir
+
 echo "Enter a project name: "
 read project_name
+clear
 
 # ----------------------------------------------------------------------------------------------
 # Create app
 # ----------------------------------------------------------------------------------------------
 
+echo -e "${BOLD}Creating app...${NC}"
 npx create-vite@latest $project_name --template react-ts
 cd $project_name
-clear
+add_and_print "Creating app                         ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Install dependencies
@@ -61,7 +90,6 @@ dev_dependencies=(
     "vite-plugin-eslint"
 )
 
-echo ""
 echo -e "${BOLD}${UNDERLINE}The following dependencies will be installed:${NC}"
 for dep in "${dependencies[@]}"; do
     echo "- $dep"
@@ -86,19 +114,17 @@ while true; do
     *) echo "Please answer yes or no." ;;
     esac
 done
-clear
+
+print_previous_outputs
 
 echo "Installing dependencies..."
 npm install --save "${dependencies[@]}"
-echo -e "${GREEN_BOLD}Done!${NC}"
+add_and_print "Installing dependencies              ${GREEN_BOLD}Done!${NC}"
 sleep 2
-clear
 
-echo ""
 echo "Installing dev dependencies..."
 npm install --save-dev "${dev_dependencies[@]}"
-echo -e "${GREEN_BOLD}Done!${NC}"
-clear
+add_and_print "Installing dev dependencies          ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Set up Vite
@@ -142,8 +168,7 @@ END
 
 echo "$vite_config_content" >vite.config.ts
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Setting up Vite                      ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Set up TypeScript
@@ -195,8 +220,7 @@ END
 
 echo "$tsconfig_content" >tsconfig.json
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Setting up TypeScript                ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Create files and folders
@@ -218,8 +242,7 @@ touch .env.example
 
 echo "# $project_name" >README.md
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Creating files and folders           ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Set up Git
@@ -261,8 +284,7 @@ END
 
 echo "$gitignore_content" >.gitignore
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Setting up Git                       ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Set up ESLint
@@ -308,8 +330,7 @@ echo "$eslintrc_content" >.eslintrc.cjs
 
 npm pkg set scripts.lint:fix="eslint . --ext ts,tsx --fix"
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Setting up ESLint                    ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Set up Prettier
@@ -336,8 +357,7 @@ echo "$prettierrc_content" >.prettierrc
 
 npm pkg set scripts.format="prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Setting up Prettier                  ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Set up Husky and lint-staged
@@ -360,8 +380,7 @@ npm pkg set scripts.prepare="husky install"
 npm run prepare
 npx husky add .husky/pre-commit "npx lint-staged --config ./.lintstagedrc.cjs"
 
-echo -e "${GREEN_BOLD}Done!${NC}"
-echo ""
+add_and_print "Setting up Husky and lint-staged     ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Pre-linting and formatting
@@ -372,19 +391,16 @@ echo -e "${BOLD}Linting and formatting...${NC}"
 npm run lint:fix
 npm run format
 
-echo ""
-echo -e "${GREEN_BOLD}Done!${NC}"
+add_and_print "Linting and formatting               ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Installation complete
 # ----------------------------------------------------------------------------------------------
 
-sleep 5
-clear
-echo -e "${GREEN_BOLD}Installation complete!${NC}"
-echo "To start the development server, run:"
+add_and_print "\n${GREEN_BOLD}Installation complete!${NC}\n"
+echo -e "${UNDERLINE}To start the development server, run:${NC}"
 echo ""
-echo -e "${BLUE_BOLD}cd $project_name && npm run dev${NC}"
+echo -e "${BLUE_BOLD}cd $install_dir/$project_name && npm run dev${NC}"
 echo ""
 echo "Happy coding!"
 echo ""
