@@ -40,8 +40,10 @@ clear
 
 dependencies=(
     "react"
+    "react-dom"
     "react-router-dom"
     "react-icons"
+    "react-error-boundary"
 )
 
 dev_dependencies=(
