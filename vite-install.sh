@@ -88,6 +88,7 @@ dev_dependencies=(
     "typescript"
     "vite"
     "vite-plugin-eslint"
+    "npm-check-updates"
 )
 
 echo -e "${BOLD}${UNDERLINE}The following dependencies will be installed:${NC}"
@@ -382,6 +383,17 @@ npm run prepare
 npx husky add .husky/pre-commit "npx lint-staged --config ./.lintstagedrc.cjs"
 
 add_and_print "Setting up Husky and lint-staged     ${GREEN_BOLD}Done!${NC}"
+
+# ----------------------------------------------------------------------------------------------
+# Set up npm-check-updates
+# ----------------------------------------------------------------------------------------------
+
+echo -e "${BOLD}Setting up npm-check-updates...${NC}"
+
+
+npm pkg set scripts.upgrade="ncu --interactive --format group"
+
+add_and_print "Setting up npm-check-updates         ${GREEN_BOLD}Done!${NC}"
 
 # ----------------------------------------------------------------------------------------------
 # Pre-linting and formatting
